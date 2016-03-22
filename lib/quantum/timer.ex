@@ -2,6 +2,8 @@ defmodule Quantum.Timer do
 
   @moduledoc false
 
+  @ms_in_seconds Application.get_env(:quantum, :ms_in_seconds, 1000)
+
   def timezone_function do
     case Application.get_env(:quantum, :timezone, :utc) do
       :utc ->
@@ -15,7 +17,7 @@ defmodule Quantum.Timer do
 
   def tick do
     {d, {h, m, s}} = timezone_function.(:os.timestamp)
-    Process.send_after(self, :tick, (60 - s) * 1000)
+    Process.send_after(self, :tick, (60 - s) * @ms_in_seconds)
     {d, h, m}
   end
 

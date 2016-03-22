@@ -122,9 +122,14 @@ defmodule Quantum do
 
   def handle_info(:tick, s) do
     {d, h, m} = Timer.tick
-    if s.d != d, do: s = %{s | d: d, w: rem(:calendar.day_of_the_week(d), 7)}
-    s = %{s | h: h, m: m}
-    {:noreply, %{s | jobs: run(s)}}
+    # Check last tick to make sure we are not in the same quantum
+    if {d, h, m} != s.last_tick do
+      if s.d != d, do: s = %{s | d: d, w: rem(:calendar.day_of_the_week(d), 7)}
+      s = %{s | h: h, m: m}
+      {:noreply, %{s | last_tick: {d, h, m}, jobs: run(s)}}
+    else
+      {:noreply, s}
+    end
   end
   def handle_info(_, s), do: {:noreply, s}
 

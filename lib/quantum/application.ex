@@ -11,7 +11,7 @@ defmodule Quantum.Application do
     jobs = :quantum |> Application.get_env(:cron, [])
     |> Enum.map(&normalize/1)
     |> remove_jobs_with_duplicate_names
-    state = %{jobs: jobs, d: nil, h: nil, m: nil, w: nil, r: nil}
+    state = %{last_tick: {{0, 0, 0}, 0, 0}, jobs: jobs, d: nil, h: nil, m: nil, w: nil, r: nil}
     Quantum.Supervisor.start_link(state)
   end
 

@@ -1,6 +1,8 @@
 defmodule Quantum.MonotoneTest do
   use ExUnit.Case
 
+  @ms_in_seconds Application.get_env(:quantum, :ms_in_seconds, 1000)
+
   setup do
     Quantum.delete_all_jobs
 
@@ -8,6 +10,8 @@ defmodule Quantum.MonotoneTest do
         :ets.new(:counter, [:set, :public, :named_table])
         :ets.insert(:counter, {:count, 0})
     end
+
+    :ok
   end
 
   test "test job monotone" do
@@ -19,9 +23,11 @@ defmodule Quantum.MonotoneTest do
     :ok = Quantum.add_job(spec, fun)
     job = %Quantum.Job{schedule: spec, task: fun, nodes: [node()]}
 
-    :timer.sleep(10 * 60 * 1000)
+    :timer.sleep(10 * 60 * @ms_in_seconds)
 
     ec = :ets.lookup(:counter, :count)[:count]
-    assert ec == 10
+    
+    assert ec >= 1
+    assert ec <= 2
   end
 end
