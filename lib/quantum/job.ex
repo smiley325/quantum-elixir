@@ -16,7 +16,8 @@ defmodule Quantum.Job do
     nodes: nil,
     overlap: @default_overlap,
     pid: nil,
-    timezone: @default_timezone
+    timezone: @default_timezone,
+    last_run: :never # {{year, month, day}, hour, minute} of last run or :never
   ]
 
   @type t :: %Quantum.Job{}

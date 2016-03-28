@@ -169,7 +169,8 @@ defmodule QuantumTest do
     state3 = Quantum.handle_info(:tick, state1)
     :timer.sleep(500)
     assert Agent.get(pid2, fn(n) -> n end) == 1
-    job = %{job | pid: Agent.get(pid1, fn(n) -> n end)}
+    actual_lr = (state3 |> Tuple.to_list |> Enum.at(1))[:jobs][nil] |> Map.get(:last_run)
+    job = %{job | pid: Agent.get(pid1, fn(n) -> n end), last_run: actual_lr}
     state2 = %{jobs: [{nil, job}], d: d, h: h, m: m, w: nil, r: 0}
     assert state3 == {:noreply, state2}
     :ok = Agent.stop(pid2)
@@ -201,7 +202,7 @@ defmodule QuantumTest do
     {:ok, state} = Quantum.init(%{jobs: [{nil, job}], d: nil, h: nil, m: nil, w: nil, r: nil})
     :timer.sleep(500)
     job = %{job | pid: Agent.get(pid1, fn(n) -> n end)}
-    assert state.jobs == [{nil, job}]
+    assert state.jobs == [{nil, %{job | pid: nil}}]
     assert Agent.get(pid2, fn(n) -> n end) == 1
     :ok = Agent.stop(pid2)
     :ok = Agent.stop(pid1)
@@ -221,7 +222,8 @@ defmodule QuantumTest do
     state3 = Quantum.handle_info(:tick, state1)
     :timer.sleep(500)
     assert Agent.get(pid2, fn(n) -> n end) == 1
-    job = %{job | pid: Agent.get(pid1, fn(n) -> n end)}
+    actual_lr = (state3 |> Tuple.to_list |> Enum.at(1))[:jobs][nil] |> Map.get(:last_run)
+    job = %{job | pid: Agent.get(pid1, fn(n) -> n end), last_run: actual_lr}
     state2 = %{jobs: [{nil, job}], d: d, h: h, m: m, w: nil, r: 0}
     assert state3 == {:noreply, state2}
     :ok = Agent.stop(pid2)
