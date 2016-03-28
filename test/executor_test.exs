@@ -8,6 +8,11 @@ defmodule Quantum.ExecutorTest do
   def ok,     do: :ok
   def ret(v), do: v
 
+  test "check timer aliasing" do
+    {last_run, _} = execute({"* * * * *", &ok/0, [], @default_timezone, :never}, %{d: {2015, 12, 31}, h: 12, m: 0, w: 1})
+    refute execute({"* * * * *", &ok/0, [], @default_timezone, last_run}, %{d: {2015, 12, 31}, h: 12, m: 0, w: 1})
+  end
+
   test "check minutely" do
     assert execute({"* * * * *", &ok/0, [], @default_timezone, :never}, %{d: {2015, 12, 31}, h: 12, m: 0, w: 1})
   end
