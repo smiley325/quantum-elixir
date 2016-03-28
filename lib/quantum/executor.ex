@@ -36,7 +36,7 @@ defmodule Quantum.Executor do
   end
 
   def already_run({{y, m, d}, hr, min}, c) do
-    c.month == m and c.day == d and c.hour == hr and c.minute == min 
+    c.month == m and c.day == d and c.hour == hr and c.minute == min
   end
 
   def execute({"@reboot",   fun, args, tz, lr}, %{r: 1}), do: execute_fun(fun, args)
@@ -45,8 +45,8 @@ defmodule Quantum.Executor do
 
   def execute({"@hourly", fun, args, tz, lr}, state) do
     c = convert_to_timezone(state, tz)
-    if not already_run(lr, c) and c.minute == 0 do 
-      {to_std_time(c), execute_fun(fun, args)} 
+    if not already_run(lr, c) and c.minute == 0 do
+      {to_std_time(c), execute_fun(fun, args)}
     else
       false
     end
@@ -55,7 +55,7 @@ defmodule Quantum.Executor do
   def execute({"@daily", fun, args, tz, lr}, state) do
     c = convert_to_timezone(state, tz)
     if not already_run(lr, c) and c.minute == 0 and c.hour == 0 do
-      {to_std_time(c), execute_fun(fun, args)} 
+      {to_std_time(c), execute_fun(fun, args)}
     else
       false
     end
@@ -122,6 +122,8 @@ defmodule Quantum.Executor do
       !match(w, c_weekday, 0..6)  -> false
       true                        -> {to_std_time(c), execute_fun(fun, args)}
     end
+  rescue
+    e -> false
   end
 
   defp execute_fun({mod, fun}, args) do
